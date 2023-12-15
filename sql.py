@@ -22,7 +22,5 @@ class Box:
 colData = [{"cname": "Sno", "dtype": "int"}, {"cname": "name",
                                               "dtype": "varchar"}, {"cname": "marks", "dtype": "int"},]
 
-selectDatabase("sagar")
-print(createTable("afaes"))
-# test = "create table classs (sno )"
-# executeCommand()
+print(listDatabases())
+# print(createTable("afaees"))

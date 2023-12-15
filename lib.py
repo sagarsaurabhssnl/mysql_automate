@@ -1,8 +1,10 @@
 import mysql.connector as mc
 
+user = "root"
+password = "root"
 global db
 global sql
-db = mc.connect(host="localhost", user="root", password="root")
+db = mc.connect(host="localhost", user=user, password=password)
 sql = db.cursor()
 
 
@@ -37,12 +39,12 @@ def selectDatabase(dbName):
 constraints = ["NOT NULL", "DEFAULT", "UNIQUE",
                "CHECK", "Primary Key", "Foreign Key"]
 colData = [{"cname": "Sno", "dtype": "int"}, {"cname": "name",
-                                              "dtype": "varchar"}, {"cname": "marks", "dtype": "int"},]
+                                              "dtype": "varchar(20)"}, {"cname": "marks", "dtype": "int"},]
 
 
 def createCol(colData):
     # print(colData["cname"])
-    col = f'''({colData["cname"]} {colData["dtype"]}),'''
+    col = f'''{colData["cname"]} {colData["dtype"]},'''
     return col
 
 #  {colData["attr"] if (colData["attr") else ''}
@@ -60,16 +62,18 @@ def getOccurence_countOf(t, data):
 
 
 def createTable(tbName, rows=colData):
-    command = f'''create table {tbName}'''
+    command = f'''create table {tbName}('''
     for i in rows:
         d = createCol(i)
         command = command+d
         # print(command)
         # print(d)
-    command = command.replace('),', ');')
-    print(command)
-    command = command.replace(');', '),',
-                              (getOccurence_countOf(');', command)))
+    # command = command.replace('),', ');')
+    # print(command)
+    # command = command.replace(');', '),',
+    #                           (getOccurence_countOf(');', command)))
+    command = command[:-1]
+    command = command+");"
     print(command)
     try:
         sql.execute(command)
@@ -85,3 +89,25 @@ def describeTable(tbName):
 
 def executeCommand(command):
     sql.execute(command)
+
+
+def arrangeColumns(columns):
+    val = ''
+    for i in columns:
+        val += i+','
+    return val
+
+
+def formatRows(data):
+    retVal = ''
+    for i in data:
+        retVal += i
+    return
+
+
+def insertValues(tbName, columns=[], values=[]):
+    command = f'''insert into {tbName} {arrangeColumns(columns)} values '''
+    for i in values:
+        command += formatRows(i)
+    command = command[:-1]
+    command += ';'
