@@ -14,7 +14,7 @@ def listDatabases():
     dbArr = []
     for i in dbList:
         for j in i:
-            dbArr.append(j+'/n')
+            dbArr.append(j)
     return (dbArr)
 
 
