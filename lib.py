@@ -29,7 +29,15 @@ def listTables():
 
 
 def createDatabase(dbName):
-    sql.execute("CREATE DATABASE;"+dbName)
+    try:
+        sql.execute("CREATE DATABASE "+dbName)
+        return 'ok'
+    except mc.errors.ProgrammingError:
+        return 'inputError'
+    except mc.errors.DatabaseError:
+        return 'databaseExists'
+    except:
+        return 'unknownError'
 
 
 def selectDatabase(dbName):
@@ -99,15 +107,46 @@ def arrangeColumns(columns):
 
 
 def formatRows(data):
-    retVal = ''
-    for i in data:
-        retVal += i
-    return
+    retVal = '('
+    for i, d in enumerate(data):
+        d = f"'{d}'"
+        retVal += d
+        if (i+1) != len(data):
+            retVal += ','
+    retVal += '),'
+    return retVal
 
 
-def insertValues(tbName, columns=[], values=[]):
-    command = f'''insert into {tbName} {arrangeColumns(columns)} values '''
-    for i in values:
-        command += formatRows(i)
-    command = command[:-1]
-    command += ';'
+def insertValues(tbName, values=[], columns=[]):
+    command = f'''insert into {tbName} {
+        arrangeColumns(columns)} values '''
+    augm = "("
+    for i in range(len(values[0])):
+        augm += f"%s,"
+    augm = augm[0:-1]
+    augm += ")"
+    command += augm
+    # for i in values:
+    #     command += str(formatRows(i))
+    # command = command[:-1]
+    # command += ';'
+    # print(command)
+    sql.executemany(command, values)
+    tbList = sql.fetchall()
+    print(tbList)
+    db.commit()
+    print("1 record inserted, ID:", sql.lastrowid)
+
+
+def checkInput(inputData):
+    data = ''
+    error = ''
+    try:
+        data = int(inputData)
+        error = "Input should be alphanumeric"
+        print("Data Error")
+    except ValueError:
+        print("OK")
+        return inputData
+    except:
+        error = 'Unknown Error!'
